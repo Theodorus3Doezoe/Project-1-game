@@ -1,0 +1,15 @@
+#enemySelectionContainer {
+    display: none;
+}
+
+.enemies {
+    height: 40vh;
+}
+
+.enemies:hover {
+    cursor: pointer;
+}
+
+.description {
+    font-size: 1.6rem;
+}

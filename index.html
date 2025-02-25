@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberHero</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./styles/homepage.css">
+    <link rel="stylesheet" href="./styles/enemySelection.css">
+    <link rel="shortcut icon" href="./images/favicon.ico" type="image/x-icon"> <!-- icon door ai gegenereerd.-->
+    <script src="./scripts.js" defer></script>
+</head>
+<body>
+    <div id="homepageContainer">
+        <h1 id="title">CyberHero</h1>
+        <div id="homeSettings">
+            <input type="text" placeholder="Enter your name" id="nameField" maxlength="16">
+            <button id="startButton">Start</button>
+            <button id="shopButton">Shop</button>
+        </div>
+        <button><img src="./images/pointer.png" id="arrowShop" class="arrow"></button>
+        <div id="shopContainer">
+            <h1>Shop BTC: <span id="shopBtc"></span></h1>
+
+            <table>
+                <tr>
+                    <th>Upgrades:</th>
+                </tr>
+                <tr>
+                    <td>HP:</td>
+                    <td class="upgradeTable"><span id="shopHp"></span> + 10</td>
+                    <td>[<span id="hpTier"></span>/10]</td>
+                    <td>$<span id="hpPrice"></span></td>
+                    <td><button class="upgradeBtn" onclick="buyHealth()"><p>Buy</p></button></td>
+                </tr>
+                <tr>
+                    <td>Ram:</td>
+                    <td class="upgradeTable"><span id="shopRam"></span> + 10</td>
+                    <td>[<span id="ramTier"></span>/10]</td>
+                    <td>$<span id="ramPrice"></td>
+                    <td><button class="upgradeBtn" onclick="buyRam()"><p>Buy</p></button></td>
+                </tr>
+                <tr>
+                    <td>Firewall:</td>
+                    <td class="upgradeTable"><span id="shopFirewall"></span> + 10</td>
+                    <td>[<span id="firewallTier"></span>/10]</td>
+                    <td>$<span id="firewallPrice"></td>
+                    <td><button class="upgradeBtn" onclick="buyFirewall()"><p>Buy</p></button></td>
+                </tr>
+                <tr>
+                    <td>Device:</td>
+                    <td class="upgradeTable"><span id="shopDevice"></span> + 1</td>
+                    <td>[<span id="deviceTier"></span>/5]</td>
+                    <td>$<span id="devicePrice"></td>
+                    <td><button class="upgradeBtn" onclick="buyDevice()"><p>Buy</p></button></td>
+                </tr>
+                <tr>
+                    <th>Consumables</th>
+                </tr>
+                <tr>
+                    <td>System cleanup</td>
+                    <td><span id="sysCleanup"></span> / 5</td>
+                    <td></td>
+                    <td>$5</td>
+                    <td><button class="upgradeBtn" onclick="buyConsumable(0)"><p>Buy</p></button></td>
+                </tr>
+                <tr>
+                    <td>Botban</td>
+                    <td><span id="botban"></span> / 5</td>
+                    <td></td>
+                    <td>$5</td>
+                    <td><button class="upgradeBtn" onclick="buyConsumable(1)"><p>Buy</p></button></td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="enemySelectionContainer">
+            <button><img src="./images/pointer.png" id="arrowEnemySelection" class="arrow"></button>
+            <button>
+                <img src="./images/igor.png" class="enemies" id="igor" onclick="selectEnemy(0)">
+                <p class="description">Name: Igor <br>Lvl: 1<br>Avg dmg: </p>
+                
+            </button>
+            <button>
+                <img src="./images/zlatan.png" class="enemies" id="zlatan" onclick="selectEnemy(1)">
+                <p class="description">Name: Zlatan <br>Lvl: 1<br>Avg dmg: </p>
+                
+            </button>
+            <button>
+                <img src="./images/ivan.png" class="enemies" id="ivan" onclick="selectEnemy(2)">
+                <p class="description">Name: Ivan <br>Lvl: 1<br>Avg dmg: </p>
+                
+            </button>
+            <button>
+                <img src="./images/vladimir.png" class="enemies" id="vladimir" onclick="selectEnemy(3)">
+                <p class="description">Name: Vladimir <br>Lvl: 1<br>Avg dmg: </p>
+                
+            </button>
+        </div>
+        <img src="./images/playerImage.webp" id="characterImage">
+    </div>
+
+    <div id="gameContainer">
+        <button id="menuButton">Menu</button>
+        <div id="menuContainer">
+            <button id="resumeButton">Resume</button>
+            <button id="homeButton">home</button>
+        </div>
+        <div id="playerContainer">
+                <span class="hp">Ram: <span id="playerRam"></span></span>
+                <span class="hp">BTC: <span id="btc"></span></span>
+                <button class="consumable" onclick="useConsumable(0)">Cleanup</button>
+                <button class="consumable">Botban</button>
+        </div>
+        <div id="combatContainer">
+            <div id="playerImageContainer">
+                <span id="playerName">Name</span>
+                <!-- <span class="hp">HP: <span id="playerHp"></span></span> -->
+                <progress id="playerHp" value="100" max="100"></progress>
+                <img src="./images/playerImage.webp">
+            </div>
+            <div id="enemyContainer">
+                <span id="enemyName">enemyName</span>
+                <!-- <span class="hp">HP: <span id="enemyHp"></span></span> -->
+                <progress id="enemyHp" value="100" max="100"></progress>
+                <img src="" id="enemyImage">
+            </div>
+        </div>
+        <div id="actionContainer">
+            <div id="actions">
+                <button id="ddos" onclick="castAbility(0)">DDOS</button>
+                <button id="sql" onclick="castAbility(1)">SQL Injection</button>
+                <button id="bruteforce" onclick="castAbility(2)">Bruteforce</button>
+                <button id="ransomware" onclick="castAbility(3)">Ransomware</button>
+            </div>
+            <div id="actionTextContainer">
+                <p id="actionText"></p>
+            </div>
+        </div>
+        <div id="gameOverContainer">
+            <h1>Game over!</h1>
+            <h2>You <span id="winLose">...</span>!</h2>
+            <button id="restartButton">Restart</button>
+        </div>
+    </div>
+</body>
+</html>
