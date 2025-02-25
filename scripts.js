@@ -81,94 +81,69 @@ document.getElementById("startButton").addEventListener("click", () => {
 })
 
 //Shop
+const shopInitIds = ["shopBtc", "shopHp", "shopRam", "shopFirewall", "shopDevice"]
+const shopInitAttributes = [player.btc, player.health, player.ram, player.firewall, player.device]
+
+for (let i = 0; i < shopInitIds.length; i++) {
+    document.getElementById(shopInitIds[i]).innerHTML = shopInitAttributes[i]
+}
+
 document.getElementById("shopButton").addEventListener("click", () => {
     document.getElementById("shopContainer").style.display="block";
     document.getElementById("homeSettings").style.display="none";
     document.getElementById("arrowShop").style.display="block";
 })
 
-document.getElementById("shopBtc").innerHTML = player.btc
+const tierIds = ["hpTier", "ramTier", "firewallTier", "deviceTier"]
+const priceIds = ["hpPrice", "ramPrice", "firewallPrice", "devicePrice"]
+for (let i = 0; i < tierIds.length; i++) {
+    document.getElementById(tierIds[i]).innerHTML = upgrades[i].tier
+    document.getElementById(priceIds[i]).innerHTML = upgrades[i].price
+}
 
-document.getElementById("shopHp").innerHTML = player.health
-document.getElementById("hpTier").innerHTML = upgrades[0].tier
-document.getElementById("hpPrice").innerHTML = upgrades[0].price
-
-
-document.getElementById("shopRam").innerHTML = player.ram
-document.getElementById("ramTier").innerHTML = upgrades[1].tier
-document.getElementById("ramPrice").innerHTML = upgrades[1].price
-
-
-
-document.getElementById("shopFirewall").innerHTML = player.firewall
-document.getElementById("firewallTier").innerHTML = upgrades[2].tier
-document.getElementById("firewallPrice").innerHTML = upgrades[2].price
-
-
-document.getElementById("shopDevice").innerHTML = player.device
-document.getElementById("deviceTier").innerHTML = upgrades[3].tier
-document.getElementById("devicePrice").innerHTML = upgrades[3].price
-
-document.getElementById("sysCleanup").innerHTML = consumables[0].current
-document.getElementById("botban").innerHTML = consumables[1].current
-
-
-function buyHealth() {
-    if (upgrades[0].price <= player.btc && upgrades[0].tier < upgrades[0].maxTier) {
-        player.health += 10
-        upgrades[0].tier += 1
-        player.btc -= upgrades[0].price
+function buyUpgrade(upgradeIndex) {
+    if (upgrades[upgradeIndex].price <= player.btc && upgrades[upgradeIndex].tier < upgrades[upgradeIndex].maxTier) {
+        upgrades[upgradeIndex].tier ++;
+        player.btc -= upgrades[upgradeIndex].price;
+        switch(upgradeIndex) {
+            case 0: 
+                player.health += 10
+                break;
+            case 1:
+                player.ram += 10
+                break;
+            case 2:
+                player.firewall += 10
+                break;
+            case 3:
+                player.device += 1
+                break;
+        }
+        document.getElementById(tierIds[upgradeIndex]).innerHTML = upgrades[upgradeIndex].tier
         document.getElementById("shopBtc").innerHTML = player.btc
         document.getElementById("shopHp").innerHTML = player.health
-        document.getElementById("hpTier").innerHTML = upgrades[0].tier
-    }
-}
-
-function buyRam() {
-    if (upgrades[1].price <= player.btc && upgrades[1].tier < upgrades[1].maxTier) {
-        player.ram += 10
-        upgrades[1].tier += 1
-        player.btc -= upgrades[1].price
-        document.getElementById("shopBtc").innerHTML = player.btc
         document.getElementById("shopRam").innerHTML = player.ram
-        document.getElementById("ramTier").innerHTML = upgrades[1].tier
-    }
-}
-
-function buyFirewall() {
-    if (upgrades[2].price <= player.btc && upgrades[2].tier < upgrades[2].maxTier) {
-        player.firewall += 10
-        upgrades[2].tier += 1
-        player.btc -= upgrades[2].price
-        document.getElementById("shopBtc").innerHTML = player.btc
         document.getElementById("shopFirewall").innerHTML = player.firewall
-        document.getElementById("firewallTier").innerHTML = upgrades[2].tier
-    }
-}
-
-function buyDevice() {
-    if (upgrades[3].price <= player.btc && upgrades[3].tier < upgrades[3].maxTier) {
-        player.device += 1
-        upgrades[3].tier += 1
-        player.btc -= upgrades[3].price
-        document.getElementById("shopBtc").innerHTML = player.btc
         document.getElementById("shopDevice").innerHTML = player.device
-        document.getElementById("deviceTier").innerHTML = upgrades[3].tier
     }
 }
 
 const consumablesId = ["sysCleanup", "botban"]
+
+for (let i = 0; i < consumables.length; i++) {
+    document.getElementById(consumablesId[i]).innerHTML = consumables[i].current
+}
+
 function buyConsumable(index) {
     if (consumables[index].price <= player.btc && consumables[index].current < maxConsumables) {
         player.btc -= consumables[index].price
-        consumables[index].current += 1
+        consumables[index].current ++
         document.getElementById(consumablesId[index]).innerHTML = consumables[index].current
         document.getElementById("shopBtc").innerHTML = player.btc
     }
 }
 //Enemy selectionscreen
 const enemyImageSource = ["./animations/igor/igor.gif", "./animations/zlatan/zlatan.gif", "./animations/ivan/ivan.gif" ,"./animations/vladimir/vladimir.gif"]
-// const enemyIds = ["igor", "zlatan", "ivan", "vladimir"]
 let globalEnemyIndex = 0
 
 let currentHealth = player.health
