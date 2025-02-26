@@ -27,13 +27,13 @@ const upgrades = [
 
 const maxConsumables = 5
 const consumables = [
-    {name: "systemclean", current: 0, effect: 10, price: 5},
-    {name: "botban", current: 0, effect: 5, price: 5} 
+    {name: "systemclean", current: 0, effect: 10, price: 5, resource: "ram"},
+    {name: "botban", current: 0, effect: 5, price: 5, resource: "hp"} 
 ]
 
 const abilities = [
-    {name: "ddos",       power: 200, cost: 2},
-    {name: "sql",        power: 15, cost: 2},
+    {name: "ddos",       power: 20, cost: 10},
+    {name: "sql",        power: 15, cost: 5},
     {name: "bruteforce", power: 2,  cost: 2},
     {name: "ransomware", power: 5,  cost: 2, price: 1}
 ]
@@ -125,6 +125,7 @@ function buyUpgrade(upgradeIndex) {
         document.getElementById("shopRam").innerHTML = player.ram
         document.getElementById("shopFirewall").innerHTML = player.firewall
         document.getElementById("shopDevice").innerHTML = player.device
+        console.log(player.firewall)
     }
 }
 
@@ -180,7 +181,7 @@ function selectEnemy(enemyIndex) {
 }
 
 //fight logic
-const buttonIds =["ddos", "sql", "bruteforce", "ransomware"]
+const buttonIds =["ddos", "sql", "bruteforce", "ransomware", "gameCons1", "gameCons2"]
 function disableButtons() {
     for (let i = 0; i < buttonIds.length; i++) {
         document.getElementById(buttonIds[i]).setAttribute('disabled', '');
@@ -194,9 +195,42 @@ function enableButtons() {
     }
 }
 
+function enemyCast() {
+    if (currentEnemyHp <= 0) {
+        setTimeout(() => {
+            actionText.innerHTML = "You win!"
+            gameOverContainer.style.display="block";
+            document.getElementById("winLose").innerHTML = "Win"
+        }, 3000)
+    } else {
+        setTimeout(() => {
+            actionText.innerHTML = `What will ${enemies[globalEnemyIndex].name} do?`;
+        }, 2000);
+        let randomAbilityIndex = Math.floor(Math.random() * enemyAbillities.length)
+        setTimeout(() => {
+            let mitigation = 1 - (player.firewall / 100 / 2)
+            let enemyDamage = enemyAbillities[randomAbilityIndex].power * enemies[globalEnemyIndex].multiplier * mitigation
+            currentHealth -= enemyDamage
+            updateHud()
+            actionText.innerHTML = `${enemies[globalEnemyIndex].name} casts ${enemyAbillities[randomAbilityIndex].name}! <br> It deals ${enemyDamage} damage`
+            if (currentHealth <= 0) {
+                setTimeout(() => {
+                    actionText.innerHTML = "You lose!"
+                    gameOverContainer.style.display="block";
+                    document.getElementById("winLose").innerHTML = "Lose"
+                }, 2000)
+            } else {
+                setTimeout(enableButtons, 7000)
+            }
+        }, 6000)
+    }
+    updateHud()
+}
+
 //scallable button logic
 //Abilities logic
 let globalAbilityIndex = 0
+let playerDamage = null
 function castAbility(abilityIndex) {
     globalAbilityIndex = abilityIndex
     if (currentRam < abilities[abilityIndex].cost) {
@@ -205,7 +239,8 @@ function castAbility(abilityIndex) {
         actionText.innerHTML = "You have ran out of BTC!"
     } else {
         currentRam -= abilities[abilityIndex].cost
-        currentEnemyHp -= abilities[abilityIndex].power
+        playerDamage = abilities[abilityIndex].power + player.device * 5
+        currentEnemyHp -= playerDamage
         if (abilityIndex === 2) {
             let counter = 0;
             const countInterval = setInterval(count, 1000)
@@ -221,52 +256,42 @@ function castAbility(abilityIndex) {
             currentBtc += abilities[abilityIndex].price
         }
     }
-
-    actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${abilities[abilityIndex].power} damage!`
-    disableButtons()
-
-    if (currentEnemyHp <= 0) {
-        setTimeout(() => {
-            actionText.innerHTML = "You win!"
-            gameOverContainer.style.display="block";
-            document.getElementById("winLose").innerHTML = "Win"
-        }, 2000)
+    if (abilityIndex === 2) {
+        actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage every second!`
     } else {
-        setTimeout(() => {
-            actionText.innerHTML = `What will ${enemies[globalEnemyIndex].name} do?`;
-        }, 3000);
-        let randomAbilityIndex = Math.floor(Math.random() * enemyAbillities.length)
-        setTimeout(() => {
-            let damage = enemyAbillities[randomAbilityIndex].power * enemies[globalEnemyIndex].multiplier
-            currentHealth -= damage
-            updateHud()
-            actionText.innerHTML = `${enemies[globalEnemyIndex].name} casts ${enemyAbillities[randomAbilityIndex].name}! <br> It deals ${damage} damage`
-            if (currentHealth <= 0) {
-                setTimeout(() => {
-                    actionText.innerHTML = "You lose!"
-                    gameOverContainer.style.display="block";
-                    document.getElementById("winLose").innerHTML = "Lose"
-                }, 2000)
-            } else {
-                setTimeout(enableButtons, 7000)
-            }
-        }, 6000)
+        actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage!`
     }
     updateHud()
+    disableButtons()
+    enemyCast()
 }
 
-//Use consumables
-function useConsumable(index) {
-    if (index === 0 && currentRam < player.ram && consumables[0].current > 0) {
-        currentRam += consumables[0].effect;
-    }  else if (consumables[0].current === 0) {
-        console.log("You don't have any consumables!")
-    }  else if (currentRam >= player.ram) {
-        console.log("You're full of ram!")
-        console.log(`You're current ram is : ${currentRam}`)
-        console.log(`You're player ram is : ${player.ram}`)
+function useConsumable(consIndex) {
+    let resourcesCompare = [currentRam, currentHealth]
+    let playerCompare = [player.ram, player.health]
+    console.log(resourcesCompare[consIndex])
+    if (resourcesCompare[consIndex] === player.ram) {
+        actionText.innerHTML = "You're ram is full!"
+        setTimeout(() => {
+        actionText.innerHTML = `What will ${player.name} do?`;
+        }, 2000)
+    } else if (consumables[consIndex].current === 0) {
+        actionText.innerHTML = "You don't have any consumables of this sort!"
+        setTimeout(() => {
+            actionText.innerHTML = `What will ${player.name} do?`;
+            }, 2000)
+    } else {
+        if(currentRam += consumables[0].effect > player.ram){
+            let diffrence = player.ram - currentRam
+            currentRam += diffrence
+        } else {
+            currentRam += consumables[0].effect;
+        }
+        actionText.innerHTML = `${player.name} uses: ${consumables[consIndex].name}! He gains ${consumables[consIndex].effect} ${consumables[consIndex].resource}.`
+        updateHud()
+        disableButtons()
+        enemyCast()
     }
-    updateHud()
 }
 
 function restart() {

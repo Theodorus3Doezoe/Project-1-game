@@ -131,6 +131,9 @@ body {
     display: none;
 }
 
-.consumables {
-    border: ;
+.gameCons {
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 20px;
 }

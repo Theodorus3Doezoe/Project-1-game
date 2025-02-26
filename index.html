@@ -62,14 +62,14 @@
                     <td><span id="sysCleanup"></span> / 5</td>
                     <td></td>
                     <td>$5</td>
-                    <td><button class="upgradeBtn" onclick="buyConsumable(0)"><p>Buy</p></button></td>
+                    <td><button class="upgradeBtn" onclick="buyConsumable(0)" id="cons1"><p>Buy</p></button></td>
                 </tr>
                 <tr>
                     <td>Botban</td>
                     <td><span id="botban"></span> / 5</td>
                     <td></td>
                     <td>$5</td>
-                    <td><button class="upgradeBtn" onclick="buyConsumable(1)"><p>Buy</p></button></td>
+                    <td><button class="upgradeBtn" onclick="buyConsumable(1)" id="cons2"><p>Buy</p></button></td>
                 </tr>
             </table>
         </div>
@@ -109,8 +109,8 @@
         <div id="playerContainer">
                 <span class="hp">Ram: <span id="playerRam"></span></span>
                 <span class="hp">BTC: <span id="btc"></span></span>
-                <button class="consumable" onclick="useConsumable(0)">Cleanup</button>
-                <button class="consumable">Botban</button>
+                <button id="gameCons1" onclick="useConsumable(0)" class="gameCons">Cleanup</button>
+                <button id="gameCons2" onclick="useConsumable(1)" class="gameCons">Botban</button>
         </div>
         <div id="combatContainer">
             <div id="playerImageContainer">
