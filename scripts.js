@@ -15,7 +15,7 @@ const player = {
     ram: 25,
     firewall: 0,
     device: 1,
-    btc: 1500,
+    btc: 7,
 }
 
 const upgrades = [
@@ -28,13 +28,13 @@ const upgrades = [
 const maxConsumables = 5
 const consumables = [
     {name: "systemclean", current: 0, effect: 10, price: 5, resource: "ram"},
-    {name: "botban", current: 0, effect: 5, price: 5, resource: "hp"} 
+    {name: "botban", current: 0, effect: 15, price: 5, resource: "hp"} 
 ]
 
 const abilities = [
-    {name: "ddos",       power: 20, cost: 10},
-    {name: "sql",        power: 15, cost: 5},
-    {name: "bruteforce", power: 2,  cost: 2},
+    {name: "ddos",       power: 20, cost: 7},
+    {name: "sql",        power: 10, cost: 3},
+    {name: "bruteforce", power: 3,  cost: 2},
     {name: "ransomware", power: 5,  cost: 2, price: 1}
 ]
 
@@ -126,6 +126,9 @@ function buyUpgrade(upgradeIndex) {
         document.getElementById("shopFirewall").innerHTML = player.firewall
         document.getElementById("shopDevice").innerHTML = player.device
         console.log(player.firewall)
+    } else {
+        document.getElementById("shopMessage").innerHTML = "You don't have enough BTC!"
+        setTimeout(() => {document.getElementById("shopMessage").style.display = "none"}, 1500);
     }
 }
 
@@ -141,6 +144,9 @@ function buyConsumable(index) {
         consumables[index].current ++
         document.getElementById(consumablesId[index]).innerHTML = consumables[index].current
         document.getElementById("shopBtc").innerHTML = player.btc
+    } else {
+        document.getElementById("shopMessage").innerHTML = "You don't have enough BTC!"
+        setTimeout(() => {document.getElementById("shopMessage").style.display = "none"}, 1500);
     }
 }
 //Enemy selectionscreen
@@ -201,11 +207,12 @@ function enemyCast() {
             actionText.innerHTML = "You win!"
             gameOverContainer.style.display="block";
             document.getElementById("winLose").innerHTML = "Win"
+            currentBtc += 7
         }, 3000)
     } else {
         setTimeout(() => {
             actionText.innerHTML = `What will ${enemies[globalEnemyIndex].name} do?`;
-        }, 2000);
+        }, 3000);
         let randomAbilityIndex = Math.floor(Math.random() * enemyAbillities.length)
         setTimeout(() => {
             let mitigation = 1 - (player.firewall / 100 / 2)
@@ -218,11 +225,12 @@ function enemyCast() {
                     actionText.innerHTML = "You lose!"
                     gameOverContainer.style.display="block";
                     document.getElementById("winLose").innerHTML = "Lose"
+                    current -= 4
                 }, 2000)
             } else {
-                setTimeout(enableButtons, 7000)
+                setTimeout(enableButtons, 3000)
             }
-        }, 6000)
+        }, 3000)
     }
     updateHud()
 }
@@ -233,11 +241,7 @@ let globalAbilityIndex = 0
 let playerDamage = null
 function castAbility(abilityIndex) {
     globalAbilityIndex = abilityIndex
-    if (currentRam < abilities[abilityIndex].cost) {
-        actionText.innerHTML = "You dont have enough ram for this ability!"
-    } else if (currentBtc <= 0) {
-        actionText.innerHTML = "You have ran out of BTC!"
-    } else {
+    if (abilities[abilityIndex].cost <= currentRam) {
         currentRam -= abilities[abilityIndex].cost
         playerDamage = abilities[abilityIndex].power + player.device * 5
         currentEnemyHp -= playerDamage
@@ -254,40 +258,55 @@ function castAbility(abilityIndex) {
             }
         } else if (abilityIndex === 3) {
             currentBtc += abilities[abilityIndex].price
+            currentRam += 2
         }
-    }
-    if (abilityIndex === 2) {
-        actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage every second!`
+        if (abilityIndex === 2) {
+            actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage every second!`
+        } else {
+            actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage!`
+        }
+        updateHud()
+        disableButtons()
+        enemyCast()
     } else {
-        actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage!`
+        actionText.innerHTML = "You dont have enough ram for this ability!"
     }
-    updateHud()
-    disableButtons()
-    enemyCast()
 }
 
 function useConsumable(consIndex) {
     let resourcesCompare = [currentRam, currentHealth]
     let playerCompare = [player.ram, player.health]
-    console.log(resourcesCompare[consIndex])
-    if (resourcesCompare[consIndex] === player.ram) {
-        actionText.innerHTML = "You're ram is full!"
+    if (resourcesCompare[consIndex] === playerCompare[consIndex]) {
+        actionText.innerHTML = `You're ${consumables[consIndex].resource} is full!`
         setTimeout(() => {
         actionText.innerHTML = `What will ${player.name} do?`;
-        }, 2000)
+        }, 1000)
     } else if (consumables[consIndex].current === 0) {
         actionText.innerHTML = "You don't have any consumables of this sort!"
         setTimeout(() => {
             actionText.innerHTML = `What will ${player.name} do?`;
-            }, 2000)
+            }, 1000)
     } else {
-        if(currentRam += consumables[0].effect > player.ram){
-            let diffrence = player.ram - currentRam
-            currentRam += diffrence
-        } else {
-            currentRam += consumables[0].effect;
-        }
-        actionText.innerHTML = `${player.name} uses: ${consumables[consIndex].name}! He gains ${consumables[consIndex].effect} ${consumables[consIndex].resource}.`
+        let gain = 0
+        switch (consIndex) {
+            case 0: 
+                if ((currentRam + consumables[0].effect) >= player.ram) {
+                    gain = player.ram - currentRam
+                } else {
+                    gain = consumables[0].effect
+                }
+                currentRam += gain
+                break;
+                case 1:
+                    if ((currentHealth + consumables[1].effect) >= player.health) {
+                        gain = player.health - currentHealth
+                    } else {
+                        gain = consumables[1].effect
+                    }
+                    currentHealth += gain
+                    break;
+                }
+        actionText.innerHTML = `${player.name} uses ${consumables[consIndex].name}! He gains ${gain} ${consumables[consIndex].resource}.`
         updateHud()
         disableButtons()
         enemyCast()
