@@ -32,7 +32,7 @@ const consumables = [
 ]
 
 const abilities = [
-    {name: "ddos",       power: 20, cost: 7},
+    {name: "ddos",       power: 100, cost: 7},
     {name: "sql",        power: 10, cost: 3},
     {name: "bruteforce", power: 3,  cost: 2},
     {name: "ransomware", power: 5,  cost: 2, price: 1}
@@ -81,17 +81,18 @@ document.getElementById("startButton").addEventListener("click", () => {
 })
 
 //Shop
-const shopInitIds = ["shopBtc", "shopHp", "shopRam", "shopFirewall", "shopDevice"]
-const shopInitAttributes = [player.btc, player.health, player.ram, player.firewall, player.device]
-
-for (let i = 0; i < shopInitIds.length; i++) {
-    document.getElementById(shopInitIds[i]).innerHTML = shopInitAttributes[i]
-}
 
 document.getElementById("shopButton").addEventListener("click", () => {
+    const shopInitIds = ["shopBtc", "shopHp", "shopRam", "shopFirewall", "shopDevice"]
+    const shopInitAttributes = [player.btc, player.health, player.ram, player.firewall, player.device]
+
     document.getElementById("shopContainer").style.display="block";
     document.getElementById("homeSettings").style.display="none";
     document.getElementById("arrowShop").style.display="block";
+    
+    for (let i = 0; i < shopInitIds.length; i++) {
+        document.getElementById(shopInitIds[i]).innerHTML = shopInitAttributes[i]
+    }
 })
 
 const tierIds = ["hpTier", "ramTier", "firewallTier", "deviceTier"]
@@ -208,6 +209,9 @@ function enemyCast() {
             gameOverContainer.style.display="block";
             document.getElementById("winLose").innerHTML = "Win"
             currentBtc += 7
+            player.btc = currentBtc
+            console.log(player.btc)
+            updateHud()
         }, 3000)
     } else {
         setTimeout(() => {
@@ -225,7 +229,9 @@ function enemyCast() {
                     actionText.innerHTML = "You lose!"
                     gameOverContainer.style.display="block";
                     document.getElementById("winLose").innerHTML = "Lose"
-                    current -= 4
+                    currentBtc -= 4
+                    player.btc = currentBtc
+                    updateHud()                    
                 }, 2000)
             } else {
                 setTimeout(enableButtons, 3000)
