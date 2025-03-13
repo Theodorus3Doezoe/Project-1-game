@@ -16,7 +16,7 @@ const player = {
     firewall: 0,
     device: 1,
     btc: 7,
-    lvl: 1,
+    lvl: 4,
 }
 
 const upgrades = [
@@ -224,13 +224,13 @@ function win() {
 }
 
 function lose() {
+    disableButtons()
     actionText.innerHTML = "You lose!"
     gameOverContainer.style.display="block";
     document.getElementById("winLose").innerHTML = "Lose"
     currentBtc -= 4
     player.btc = currentBtc
     updateHud()  
-    disableButtons()
 }
 
 //door ai gegenereerd
@@ -289,7 +289,7 @@ function enemyCast() {
     console.log(randomAbilityIndex)
     setTimeout(() => {
         let mitigation = 1 - (player.firewall / 100 / 2)
-        let enemyDamage = enemyAbillities[randomAbilityIndex].power * enemies[globalEnemyIndex].multiplier * mitigation
+        let enemyDamage = Math.round(enemyAbillities[randomAbilityIndex].power * enemies[globalEnemyIndex].multiplier * mitigation) 
         currentHealth -= enemyDamage
         updateHud()
         if (randomAbilityIndex === 3) {
@@ -307,10 +307,11 @@ function enemyCast() {
                 setTimeout(() => {document.getElementById("speech-bubble").style.display = "none"}, 3000)
             }
             actionText.innerHTML = `${enemies[globalEnemyIndex].name} casts ${enemyAbillities[randomAbilityIndex].name}! <br> It deals ${enemyDamage} damage`
-            setTimeout(enableButtons, 3000)
         }
         if (currentHealth <= 0) {
             setTimeout(lose, 2000)
+        } else {
+            setTimeout(enableButtons, 3000)
         }
     }, 3000)
     updateHud()
@@ -324,7 +325,7 @@ function castAbility(abilityIndex) {
     globalAbilityIndex = abilityIndex
     if (abilities[abilityIndex].cost <= currentRam) {
         currentRam -= abilities[abilityIndex].cost
-        playerDamage = abilities[abilityIndex].power + player.device * 5
+        playerDamage = Math.round(abilities[abilityIndex].power + player.device * 5) 
         currentEnemyHp -= playerDamage
         if (abilityIndex === 2) {
             let counter = 0;
