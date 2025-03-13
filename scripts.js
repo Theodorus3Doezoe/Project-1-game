@@ -16,7 +16,7 @@ const player = {
     firewall: 0,
     device: 1,
     btc: 7,
-    lvl: 4,
+    lvl: 1,
 }
 
 const upgrades = [
