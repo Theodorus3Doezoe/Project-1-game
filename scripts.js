@@ -16,6 +16,7 @@ const player = {
     firewall: 0,
     device: 1,
     btc: 7,
+    lvl: 1,
 }
 
 const upgrades = [
@@ -32,29 +33,31 @@ const consumables = [
 ]
 
 const abilities = [
-    {name: "ddos",       power: 100, cost: 7},
-    {name: "sql",        power: 10, cost: 3},
-    {name: "bruteforce", power: 3,  cost: 2},
-    {name: "ransomware", power: 5,  cost: 2, price: 1}
+    {name: "ddos",       power: 17, cost: 5},
+    {name: "sql",        power: 12, cost: 3},
+    {name: "bruteforce", power: 4,  cost: 2},
+    {name: "ransomware", power: 6,  cost: 2, price: 1},
 ]
 
 const enemies = [
-    {name: "igor", health: 100, multiplier: 1},
-    {name: "zlatan", health: 120, multiplier: 1.5},
-    {name: "ivan", health: 160, multiplier: 2},
-    {name: "vladimir", health: 200, multiplier: 2.5}
+    {name: "igor", health: 100, multiplier: 1, lvl: 1},
+    {name: "zlatan", health: 120, multiplier: 1.5, lvl: 2},
+    {name: "ivan", health: 160, multiplier: 2, lvl: 3},
+    {name: "vladimir", health: 200, multiplier: 2.5, lvl: 4}
 ]
 
 const enemyAbillities = [
     {name: "propaganda", power: 10},
     {name: "fakenews", power: 10},
-    {name: "trolling", power: 10},
-    {name: "censorship", power: 10}
+    {name: "trolling", power: 15},
+    {name: "censorship", power: 5}
 ]
+document.getElementById("lvlDisplay").innerHTML = player.lvl
 
 document.getElementById("arrowEnemySelection").addEventListener("click", () => {
     document.getElementById("enemySelectionContainer").style.display="none"
     document.getElementById("homeSettings").style.display="flex"
+    document.getElementById("characterImageContainer").style.display="block"
 })
 
 document.getElementById("arrowShop").addEventListener("click", () => {
@@ -74,7 +77,7 @@ document.getElementById("startButton").addEventListener("click", () => {
         currentHealth = player.health
         document.getElementById("homeSettings").style.display="none";
         document.getElementById("enemySelectionContainer").style.display="block";
-        document.getElementById("characterImage").style.display="none";   
+        document.getElementById("characterImageContainer").style.display="none";   
         actionText.innerHTML = `What will ${player.name} do?`
         updateHud()
     }
@@ -173,17 +176,22 @@ function updateHud() {
 }
 
 function selectEnemy(enemyIndex) {
-    globalEnemyIndex = enemyIndex
-    enemyName.innerHTML = enemies[enemyIndex].name
-    currentEnemyHp = enemies[enemyIndex].health
-    updateValues()
-    updateHud()
-    document.getElementById("gameContainer").style.display="block" 
-    document.getElementById("homepageContainer").style.display="none" 
-    document.getElementById("enemyImage").src = enemyImageSource[enemyIndex];
-    if (enemyIndex === 2) {
-        document.getElementById("enemyHp").style.marginLeft="5vw"
-        document.getElementById("enemyName").style.marginLeft="5vw"
+    if (player.lvl < enemies[enemyIndex].lvl) {
+        document.getElementById("lvlPopUp").style.display = "block"
+        setTimeout(() => {document.getElementById("lvlPopUp").style.display = "none"}, 1000)
+    } else {
+        globalEnemyIndex = enemyIndex
+        enemyName.innerHTML = enemies[enemyIndex].name
+        currentEnemyHp = enemies[enemyIndex].health
+        updateValues()
+        updateHud()
+        document.getElementById("gameContainer").style.display="block" 
+        document.getElementById("homepageContainer").style.display="none" 
+        document.getElementById("enemyImage").src = enemyImageSource[enemyIndex];
+        if (enemyIndex === 2) {
+            document.getElementById("enemyHp").style.marginLeft="5vw"
+            document.getElementById("enemyName").style.marginLeft="5vw"
+        }
     }
 }
 
@@ -202,44 +210,111 @@ function enableButtons() {
     }
 }
 
-function enemyCast() {
-    if (currentEnemyHp <= 0) {
-        setTimeout(() => {
-            actionText.innerHTML = "You win!"
-            gameOverContainer.style.display="block";
-            document.getElementById("winLose").innerHTML = "Win"
-            currentBtc += 7
-            player.btc = currentBtc
-            console.log(player.btc)
-            updateHud()
-        }, 3000)
-    } else {
-        setTimeout(() => {
-            actionText.innerHTML = `What will ${enemies[globalEnemyIndex].name} do?`;
-        }, 3000);
-        let randomAbilityIndex = Math.floor(Math.random() * enemyAbillities.length)
-        setTimeout(() => {
-            let mitigation = 1 - (player.firewall / 100 / 2)
-            let enemyDamage = enemyAbillities[randomAbilityIndex].power * enemies[globalEnemyIndex].multiplier * mitigation
-            currentHealth -= enemyDamage
-            updateHud()
-            actionText.innerHTML = `${enemies[globalEnemyIndex].name} casts ${enemyAbillities[randomAbilityIndex].name}! <br> It deals ${enemyDamage} damage`
-            if (currentHealth <= 0) {
-                setTimeout(() => {
-                    actionText.innerHTML = "You lose!"
-                    gameOverContainer.style.display="block";
-                    document.getElementById("winLose").innerHTML = "Lose"
-                    currentBtc -= 4
-                    player.btc = currentBtc
-                    updateHud()                    
-                }, 2000)
-            } else {
-                setTimeout(enableButtons, 3000)
-            }
-        }, 3000)
+function win() {
+    actionText.innerHTML = "You win!"
+    gameOverContainer.style.display="block";
+    document.getElementById("winLose").innerHTML = "Win"
+    currentBtc += 7
+    player.btc = currentBtc
+    if (player.lvl < 4){
+        player.lvl += 1
     }
     updateHud()
+    document.getElementById("lvlDisplay").innerHTML = player.lvl
 }
+
+function lose() {
+    actionText.innerHTML = "You lose!"
+    gameOverContainer.style.display="block";
+    document.getElementById("winLose").innerHTML = "Lose"
+    currentBtc -= 4
+    player.btc = currentBtc
+    updateHud()  
+    disableButtons()
+}
+
+//door ai gegenereerd
+const propagandaArray = [
+    "Russia stands strong!",
+    "United, we are invincible!",
+    "Beware the Western threat!",
+    "Our homeland, our pride!",
+    "Defend Russia's honor!",
+    "Victory is ours!",
+    "Together, we prevail!",
+    "Russia's might is unmatched!",
+    "Stand firm, comrades!",
+    "Our future is bright!",
+    "Enemies tremble before us!",
+    "Russia leads the way!",
+    "Patriotism is our strength!",
+    "United against adversity!",
+    "Our resolve is unbreakable!",
+    "Russia's spirit never falters!",
+    "We are the true defenders!",
+    "Our nation, our destiny!",
+    "Strength through unity!",
+    "Russia's glory shines eternal!"
+  ];
+
+  const fakenewsArray = [
+    "The West plans secret invasion!",
+    "Russia's economy stronger than ever!",
+    "Ukraine plots against its own people!",
+    "NATO soldiers spotted near Russian borders!",
+    "Sanctions only boost Russian prosperity!",
+    "Global warming is a Western hoax!",
+    "Europe crumbles under American influence!",
+    "Russian scientists discover miracle cure!",
+    "The West fears Russian technology!",
+    "Foreign agents spread anti-Russian lies!",
+    "Russia protects traditional family values!",
+    "Enemies conspire to divide Russia!",
+    "Western media hides the truth!",
+    "Russia's military is invincible!",
+    "Secret weapons program secures peace!",
+    "The dollar is collapsing soon!",
+    "Russia's allies grow stronger daily!",
+    "Foreign NGOs corrupt Russian youth!",
+    "Western culture threatens Russian identity!",
+    "Victory is certain for Russia!"
+];
+// tot hier
+
+function enemyCast() {
+    setTimeout(() => {
+        actionText.innerHTML = `What will ${enemies[globalEnemyIndex].name} do?`;
+    }, 3000);
+    let randomAbilityIndex = Math.floor(Math.random() * enemyAbillities.length)
+    console.log(randomAbilityIndex)
+    setTimeout(() => {
+        let mitigation = 1 - (player.firewall / 100 / 2)
+        let enemyDamage = enemyAbillities[randomAbilityIndex].power * enemies[globalEnemyIndex].multiplier * mitigation
+        currentHealth -= enemyDamage
+        updateHud()
+        if (randomAbilityIndex === 3) {
+            actionText.innerHTML = `${enemies[globalEnemyIndex].name} casts ${enemyAbillities[randomAbilityIndex].name}! <br> It deals ${enemyDamage} damage and he can cast again!`
+            if (currentHealth <= 0) {setTimeout(lose, 2000)}
+            enemyCast()
+        } else {
+            if (randomAbilityIndex === 0) {
+                document.getElementById("speech-bubble").style.display = "block"
+                document.getElementById("bubbleText").innerHTML = propagandaArray[Math.floor(Math.random() * propagandaArray.length)]
+                setTimeout(() => {document.getElementById("speech-bubble").style.display = "none"}, 3000)
+            } else if (randomAbilityIndex === 1) {
+                document.getElementById("speech-bubble").style.display = "block"
+                document.getElementById("bubbleText").innerHTML = fakenewsArray[Math.floor(Math.random() * fakenewsArray.length)]
+                setTimeout(() => {document.getElementById("speech-bubble").style.display = "none"}, 3000)
+            }
+            actionText.innerHTML = `${enemies[globalEnemyIndex].name} casts ${enemyAbillities[randomAbilityIndex].name}! <br> It deals ${enemyDamage} damage`
+            setTimeout(enableButtons, 3000)
+        }
+        if (currentHealth <= 0) {
+            setTimeout(lose, 2000)
+        }
+    }, 3000)
+    updateHud()
+    }
 
 //scallable button logic
 //Abilities logic
@@ -255,16 +330,21 @@ function castAbility(abilityIndex) {
             let counter = 0;
             const countInterval = setInterval(count, 1000)
             function count() {
-                counter++
-                currentEnemyHp -= abilities[2].power
-                updateHud()
-                if(counter === 5) {
+                if (currentEnemyHp <= 0) {
+                    win()
                     clearInterval(countInterval)
+                    return
+                } else {
+                    counter++
+                    currentEnemyHp -= abilities[2].power
+                    updateHud()
+                    if(counter === 5) {
+                        clearInterval(countInterval)
+                    }
                 }
             }
         } else if (abilityIndex === 3) {
             currentBtc += abilities[abilityIndex].price
-            currentRam += 2
         }
         if (abilityIndex === 2) {
             actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage every second!`
@@ -273,7 +353,11 @@ function castAbility(abilityIndex) {
         }
         updateHud()
         disableButtons()
-        enemyCast()
+        if (currentEnemyHp <= 0) {
+            setTimeout(win, 2000)
+        } else {
+            enemyCast()
+        }
     } else {
         actionText.innerHTML = "You dont have enough ram for this ability!"
     }
@@ -324,7 +408,7 @@ function restart() {
     document.getElementById("homeSettings").style.display="flex"
     document.getElementById("gameContainer").style.display="none"
     document.getElementById("enemySelectionContainer").style.display="none"
-    document.getElementById("characterImage").style.display="block"
+    document.getElementById("characterImageContainer").style.display="block"
     gameOverContainer.style.display="none";
     enableButtons()
 }

@@ -12,6 +12,7 @@
 </head>
 <body>
     <div id="homepageContainer">
+        <p id="lvlPopUp">You're lvl is to low!</p>
         <h1 id="title">CyberHero</h1>
         <div id="homeSettings">
             <input type="text" placeholder="Enter your name" id="nameField" maxlength="16">
@@ -74,29 +75,33 @@
         </div>
 
         <div id="enemySelectionContainer">
+
             <button><img src="./images/pointer.png" id="arrowEnemySelection" class="arrow"></button>
             <button>
                 <img src="./images/igor.png" class="enemies" id="igor" onclick="selectEnemy(0)">
-                <p class="description">Name: Igor <br>Lvl: 1<br>Avg dmg: </p>
+                <p class="description">Name: Igor <br>Lvl: 1<br>Avg dmg: 10</p>
                 
             </button>
             <button>
                 <img src="./images/zlatan.png" class="enemies" id="zlatan" onclick="selectEnemy(1)">
-                <p class="description">Name: Zlatan <br>Lvl: 1<br>Avg dmg: </p>
+                <p class="description">Name: Zlatan <br>Lvl: 2<br>Avg dmg: 15</p>
                 
             </button>
             <button>
                 <img src="./images/ivan.png" class="enemies" id="ivan" onclick="selectEnemy(2)">
-                <p class="description">Name: Ivan <br>Lvl: 1<br>Avg dmg: </p>
+                <p class="description">Name: Ivan <br>Lvl: 3<br>Avg dmg: 20</p>
                 
             </button>
             <button>
                 <img src="./images/vladimir.png" class="enemies" id="vladimir" onclick="selectEnemy(3)">
-                <p class="description">Name: Vladimir <br>Lvl: 1<br>Avg dmg: </p>
+                <p class="description">Name: Vladimir <br>Lvl: 4<br>Avg dmg: 25</p>
                 
             </button>
         </div>
-        <img src="./images/playerImage.webp" id="characterImage">
+        <div id="characterImageContainer">
+            <p>Level: <span id="lvlDisplay"></span></p>
+            <img src="./images/playerImage.webp" id="characterImage">
+        </div>
     </div>
 
     <div id="gameContainer">
@@ -114,13 +119,14 @@
         <div id="combatContainer">
             <div id="playerImageContainer">
                 <span id="playerName">Name</span>
-                <!-- <span class="hp">HP: <span id="playerHp"></span></span> -->
                 <progress id="playerHp" value="100" max="100"></progress>
                 <img src="./images/playerImage.webp">
             </div>
             <div id="enemyContainer">
+                <div id="speech-bubble">
+                    <p id="bubbleText"></p>
+                </div>
                 <span id="enemyName">enemyName</span>
-                <!-- <span class="hp">HP: <span id="enemyHp"></span></span> -->
                 <progress id="enemyHp" value="100" max="100"></progress>
                 <img src="" id="enemyImage">
             </div>

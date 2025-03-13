@@ -13,3 +13,13 @@
 .description {
     font-size: 1.6rem;
 }
+
+#lvlPopUp {
+    text-align: center;
+    /* padding-bottom: 2vh; */
+    position: absolute;
+    /* width: 100%; */
+    top: 0;
+    font-size: 1.6rem;
+    display: none;
+}

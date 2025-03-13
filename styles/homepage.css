@@ -12,10 +12,17 @@
     /* display: none; */    
 }
 
-#characterImage {
+#characterImageContainer {
     position: absolute;
     right: 0;
+    text-align: center;
+    font-size: 2rem;
 }
+
+#lvlDisplay {
+    padding-right: 1vw;
+}
+
 
 #title {
     font-size: 6rem;
