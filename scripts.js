@@ -324,33 +324,38 @@ let playerDamage = null
 function castAbility(abilityIndex) {
     globalAbilityIndex = abilityIndex
     if (abilities[abilityIndex].cost <= currentRam) {
+        const misCalc = Math.floor(Math.random * 50)
         currentRam -= abilities[abilityIndex].cost
         playerDamage = Math.round(abilities[abilityIndex].power + player.device * 5) 
-        currentEnemyHp -= playerDamage
-        if (abilityIndex === 2) {
-            let counter = 0;
-            const countInterval = setInterval(count, 1000)
-            function count() {
-                if (currentEnemyHp <= 0) {
-                    win()
-                    clearInterval(countInterval)
-                    return
-                } else {
-                    counter++
-                    currentEnemyHp -= abilities[2].power
-                    updateHud()
-                    if(counter === 5) {
+        if (misCalc === 1) {
+            actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It misses and deals 0 damage!`
+        } else {
+            currentEnemyHp -= playerDamage
+            if (abilityIndex === 2) {
+                let counter = 0;
+                const countInterval = setInterval(count, 1000)
+                function count() {
+                    if (currentEnemyHp <= 0) {
+                        win()
                         clearInterval(countInterval)
+                        return
+                    } else {
+                        counter++
+                        currentEnemyHp -= abilities[2].power
+                        updateHud()
+                        if(counter === 5) {
+                            clearInterval(countInterval)
+                        }
                     }
                 }
+            } else if (abilityIndex === 3) {
+                currentBtc += abilities[abilityIndex].price
             }
-        } else if (abilityIndex === 3) {
-            currentBtc += abilities[abilityIndex].price
-        }
-        if (abilityIndex === 2) {
-            actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage every second!`
-        } else {
-            actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage!`
+            if (abilityIndex === 2) {
+                actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage every second!`
+            } else {
+                actionText.innerHTML = `${player.name} casts: ${abilities[abilityIndex].name}! <br> It deals ${playerDamage} damage!`
+            }
         }
         updateHud()
         disableButtons()
